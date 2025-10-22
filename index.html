@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Dish | Save Food, Save Money</title>
+
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts for a friendly, modern look (Quicksand & Playfair Display) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+    <!-- Custom styles for aesthetics and animations -->
+    <style>
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #F8F7F2;
+            overflow-x: hidden;
+            color: #292524; /* Stone-800 equivalent */
+        }
+        .font-serif { font-family: 'Playfair Display', serif; }
+        .feature-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        .feature-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        /* Mobile background pattern for hero */
+        .hero-pattern {
+            background-image: radial-gradient(#d1fae5 1px, transparent 1px);
+            background-size: 16px 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header class="bg-white/90 backdrop-blur-lg shadow-md sticky top-0 z-50 border-b border-emerald-100">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-3xl font-bold text-emerald-600 flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 text-emerald-500" viewBox="0 0 24 24" fill="currentColor"><path d="M22,9.333V8H2V9.333a9.998,9.998,0,0,0,2.158,6.334L4,22H20l-.158-6.333A9.998,9.998,0,0,0,22,9.333ZM12,2a8,8,0,0,0-8,8v.667h16V10A8,8,0,0,0,12,2Z"/></svg>
+                <span class="font-serif">Daily Dish</span>
+            </a>
+            <nav class="space-x-4">
+                <a href="login.html" class="px-5 py-2 text-emerald-600 font-semibold rounded-full transition-all duration-200 hover:bg-emerald-50">Login</a>
+                <a href="signup.html" class="px-5 py-2 bg-emerald-500 text-white font-semibold rounded-full shadow-lg transition-all duration-300 hover:bg-emerald-600 hover:shadow-xl">Sign Up</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section id="hero-section" class="relative hero-pattern bg-gradient-to-br from-emerald-50 to-green-100 pt-24 pb-32 md:pt-32 md:pb-48 overflow-hidden">
+            <div class="container mx-auto px-6 text-center relative z-10">
+                <h1 class="text-5xl md:text-7xl font-serif font-extrabold leading-tight mb-6 animate-pulse">
+                    The Smart Way to <span class="text-emerald-600">Eat Good</span>
+                </h1>
+                <p class="text-xl text-stone-600 max-w-3xl mx-auto mb-10">
+                    Daily Dish connects you with local shops offering **fresh surplus food** at massive discounts. Save money, fight food waste, and support your community.
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
+                    <a href="signup.html" class="inline-block bg-emerald-500 text-white text-lg font-bold py-3 px-10 rounded-full hover:bg-emerald-600 focus:outline-none focus:ring-4 focus:ring-emerald-300 transition-all duration-300 transform hover:scale-105 shadow-2xl">
+                        Start Saving Now
+                    </a>
+                    <a href="#how-it-works" class="inline-block bg-white text-emerald-600 text-lg font-bold py-3 px-10 rounded-full border-2 border-emerald-300 hover:bg-emerald-50 transition-all duration-300 transform hover:scale-105 shadow-md">
+                        How It Works
+                    </a>
+                </div>
+            </div>
+            <!-- Decorative image/icon to hint at the service -->
+            <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/3 w-32 h-32 md:w-40 md:h-40 bg-white rounded-full shadow-2xl flex items-center justify-center border-4 border-emerald-50">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-emerald-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+            </div>
+        </section>
+
+        <!-- Features/Benefits Section -->
+        <section id="benefits-section" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-serif font-bold mb-4">A Win-Win-Win for Everyone</h2>
+                    <p class="text-lg text-stone-600">The Daily Dish platform benefits consumers, businesses, and the planet.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+
+                    <!-- Benefit 1: Save Money (Buyer Focus) -->
+                    <div class="feature-card bg-emerald-50 p-8 rounded-2xl shadow-xl border border-emerald-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-emerald-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 10v2M18 10s-1.5-2-6-2-6 2-6 2"/></svg>
+                        <h3 class="text-2xl font-bold mb-3">Pocket Savings</h3>
+                        <p class="text-stone-700">Get quality food at **50-70% off** retail price. Treat yourself without breaking the bank.</p>
+                    </div>
+
+                    <!-- Benefit 2: Reduce Waste (Planet Focus) -->
+                    <div class="feature-card bg-red-50 p-8 rounded-2xl shadow-xl border border-red-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                        <h3 class="text-2xl font-bold mb-3">Zero Food Waste</h3>
+                        <p class="text-stone-700">Prevent perfectly edible food from going to the landfill. Be a part of the solution.</p>
+                    </div>
+
+                    <!-- Benefit 3: Increase Revenue (Seller Focus) -->
+                    <div class="feature-card bg-amber-50 p-8 rounded-2xl shadow-xl border border-amber-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-amber-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8A7 7 0 005 21a2 2 0 01-2-2m14-10a4 4 0 00-4-4H5a4 4 0 00-4 4v10a4 4 0 004 4h10a4 4 0 004-4V7z" /></svg>
+                        <h3 class="text-2xl font-bold mb-3">Extra Income</h3>
+                        <p class="text-stone-700">Businesses can turn potential losses into revenue by selling surplus stock instead of dumping it.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action for Sellers -->
+        <section class="py-20 bg-gray-100 border-t border-b border-stone-200">
+            <div class="container mx-auto px-6 text-center max-w-4xl">
+                <h2 class="text-4xl font-serif font-bold text-stone-800 mb-4">Are you a Local Shop or Bakery?</h2>
+                <p class="text-xl text-stone-600 mb-8">It only takes two minutes to post your first deal and make back some revenue.</p>
+                <a href="signup.html" class="inline-block bg-amber-500 text-white text-lg font-bold py-3 px-10 rounded-full hover:bg-amber-600 focus:outline-none focus:ring-4 focus:ring-amber-300 transition-all duration-300 transform hover:scale-105 shadow-xl">
+                    Register Your Business
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-10 mt-0 text-stone-500 text-sm bg-white border-t border-stone-200">
+        <div class="container mx-auto px-6">
+            <p class="font-bold text-emerald-600 text-lg mb-2 font-serif">Daily Dish</p>
+            <p>Connecting communities and reducing food waste. | <a href="#" class="hover:text-emerald-500">Privacy Policy</a> | <a href="#" class="hover:text-emerald-500">Terms of Service</a></p>
+            <p class="mt-4">&copy; 2025 Daily Dish. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

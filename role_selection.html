@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Dish | Select Your Role</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Quicksand', sans-serif; background-color: #F8F7F2; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+        .role-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            cursor: pointer;
+            border: 3px solid transparent;
+        }
+        .role-card:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .buyer-bg { background-image: linear-gradient(to top right, #d1fae5, #ecfdf5); }
+        .seller-bg { background-image: linear-gradient(to top left, #fef9e9, #fefce8); }
+        .card-shadow-emerald:hover { border-color: #059669; }
+        .card-shadow-amber:hover { border-color: #fbbf24; }
+    </style>
+</head>
+<body class="text-stone-800 flex flex-col min-h-screen">
+
+    <!-- Header Section -->
+    <header class="bg-white/90 backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-emerald-100">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold text-emerald-600 flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-emerald-500" viewBox="0 0 24 24" fill="currentColor"><path d="M22,9.333V8H2V9.333a9.998,9.998,0,0,0,2.158,6.334L4,22H20l-.158-6.333A9.998,9.998,0,0,0,22,9.333ZM12,2a8,8,0,0,0-8,8v.667h16V10A8,8,8,0,0,0,12,2Z"/></svg>
+                <span class="font-serif">Daily Dish</span>
+            </a>
+            <p class="text-stone-500">Logged in as **User Name**</p>
+        </div>
+    </header>
+
+    <main class="flex-grow flex items-center justify-center py-16 px-6">
+        <div class="max-w-4xl w-full text-center">
+            <h1 class="text-5xl font-serif font-extrabold text-stone-800 mb-4">What Will You Do Today?</h1>
+            <p class="text-xl text-stone-600 mb-12">Choose your primary goal for this session.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+
+                <!-- Role Card 1: Buyer -->
+                <a href="buyer_dashboard.html" class="role-card buyer-bg p-10 rounded-3xl shadow-xl card-shadow-emerald">
+                    <div class="h-20 w-20 mx-auto mb-6 bg-white/70 rounded-full flex items-center justify-center shadow-inner">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                    </div>
+                    <h2 class="text-3xl font-serif font-bold text-emerald-800 mb-3">I'm a Buyer</h2>
+                    <p class="text-stone-700 mb-6 text-lg">
+                        **Find the deals!** Browse local shops, secure discounted surplus food, and pick it up.
+                    </p>
+                    <span class="inline-block text-white bg-emerald-500 py-2 px-6 rounded-full font-bold">Start Browsing</span>
+                </a>
+
+                <!-- Role Card 2: Seller -->
+                <a href="seller_dashboard.html" class="role-card seller-bg p-10 rounded-3xl shadow-xl card-shadow-amber">
+                    <div class="h-20 w-20 mx-auto mb-6 bg-white/70 rounded-full flex items-center justify-center shadow-inner">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                    </div>
+                    <h2 class="text-3xl font-serif font-bold text-amber-800 mb-3">I'm a Seller</h2>
+                    <p class="text-stone-700 mb-6 text-lg">
+                        **Post new deals!** List your surplus stock, manage existing offers, and track your impact.
+                    </p>
+                    <span class="inline-block text-white bg-amber-500 py-2 px-6 rounded-full font-bold">Open Seller Dashboard</span>
+                </a>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer (simple for internal page) -->
+    <footer class="text-center py-4 text-stone-500 text-sm bg-white border-t border-stone-200">
+        &copy; 2025 Daily Dish.
+    </footer>
+
+</body>
+</html>

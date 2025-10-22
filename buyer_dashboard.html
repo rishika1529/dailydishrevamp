@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Dish | Buyer Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Quicksand', sans-serif; background-color: #F8F7F2; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+        .deal-card { transition: transform 0.2s ease; }
+        .deal-card:hover { transform: translateY(-3px); }
+        .tag { display: inline-block; padding: 4px 8px; border-radius: 9999px; font-weight: 700; font-size: 0.75rem; }
+    </style>
+</head>
+<body class="text-stone-800 flex flex-col min-h-screen">
+
+    <!-- Header Section -->
+    <header class="bg-white/90 backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-emerald-100">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold text-emerald-600 flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-emerald-500" viewBox="0 0 24 24" fill="currentColor"><path d="M22,9.333V8H2V9.333a9.998,9.998,0,0,0,2.158,6.334L4,22H20l-.158-6.333A9.998,9.998,0,0,0,22,9.333ZM12,2a8,8,0,0,0-8,8v.667h16V10A8,8,0,0,0,12,2Z"/></svg>
+                <span class="font-serif">Daily Dish</span>
+            </a>
+            <div class="flex items-center space-x-4">
+                <span class="text-stone-600 hidden sm:block">Welcome back, **Buyer Name**!</span>
+                <a href="role_selection.html" class="px-4 py-2 text-sm text-white bg-emerald-500 rounded-full hover:bg-emerald-600 transition">Change Role</a>
+                <a href="login.html" class="text-stone-500 hover:text-red-500 transition">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow py-10">
+        <div class="container mx-auto px-6">
+            <h1 class="text-4xl font-serif font-bold text-stone-800 mb-8">Your Deal Hunt</h1>
+
+            <!-- Filters and Search Bar -->
+            <div class="bg-white p-6 rounded-xl shadow-lg mb-8 border border-stone-200">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <input type="text" placeholder="Search by product or shop..." class="p-3 border border-stone-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+                    <select class="p-3 border border-stone-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+                        <option>Category: All</option>
+                        <option>Bakery</option>
+                        <option>Produce</option>
+                        <option>Dairy</option>
+                    </select>
+                    <select class="p-3 border border-stone-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+                        <option>Distance: 5 km</option>
+                        <option>1 km</option>
+                        <option>10 km</option>
+                    </select>
+                    <button class="bg-emerald-500 text-white font-bold p-3 rounded-lg hover:bg-emerald-600 transition">
+                        Apply Filters
+                    </button>
+                </div>
+            </div>
+
+            <!-- Deal List Section -->
+            <h2 class="text-3xl font-serif font-bold text-stone-800 mb-6 border-b pb-2">Near-Expiry Deals Today (12)</h2>
+            <div id="deal-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+                <!-- Placeholder Deal Card 1 -->
+                <div class="deal-card bg-white p-5 rounded-2xl shadow-xl border-t-4 border-emerald-400">
+                    <p class="tag bg-emerald-100 text-emerald-700">BAKERY</p>
+                    <h3 class="text-xl font-bold mt-2 mb-1">Artisan Sourdough Loaf</h3>
+                    <p class="text-stone-600 mb-3 text-sm">from **The Corner Bakery**</p>
+                    <div class="flex items-end justify-between mb-4">
+                        <p class="text-3xl font-bold text-red-600">₹75</p>
+                        <p class="text-sm text-stone-400 line-through">₹250</p>
+                    </div>
+                    <p class="text-xs text-red-500 mb-4 font-semibold flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        Pick up until: 6:00 PM today
+                    </p>
+                    <button class="w-full bg-emerald-500 text-white font-bold py-3 rounded-lg hover:bg-emerald-600 transition shadow-lg">Reserve Deal</button>
+                </div>
+
+                <!-- Placeholder Deal Card 2 -->
+                <div class="deal-card bg-white p-5 rounded-2xl shadow-xl border-t-4 border-yellow-400">
+                    <p class="tag bg-yellow-100 text-yellow-700">PRODUCE</p>
+                    <h3 class="text-xl font-bold mt-2 mb-1">Organic Banana Bunch</h3>
+                    <p class="text-stone-600 mb-3 text-sm">from **Green Grocer Market**</p>
+                    <div class="flex items-end justify-between mb-4">
+                        <p class="text-3xl font-bold text-red-600">₹40</p>
+                        <p class="text-sm text-stone-400 line-through">₹120</p>
+                    </div>
+                    <p class="text-xs text-red-500 mb-4 font-semibold flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        Pick up until: 7:30 PM today
+                    </p>
+                    <button class="w-full bg-emerald-500 text-white font-bold py-3 rounded-lg hover:bg-emerald-600 transition shadow-lg">Reserve Deal</button>
+                </div>
+
+                <!-- Placeholder Deal Card 3 -->
+                <div class="deal-card bg-white p-5 rounded-2xl shadow-xl border-t-4 border-blue-400">
+                    <p class="tag bg-blue-100 text-blue-700">DAIRY</p>
+                    <h3 class="text-xl font-bold mt-2 mb-1">Cheddar Cheese Block</h3>
+                    <p class="text-stone-600 mb-3 text-sm">from **City Deli & Cheese**</p>
+                    <div class="flex items-end justify-between mb-4">
+                        <p class="text-3xl font-bold text-red-600">₹150</p>
+                        <p class="text-sm text-stone-400 line-through">₹400</p>
+                    </div>
+                    <p class="text-xs text-red-500 mb-4 font-semibold flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        Pick up until: 8:00 PM today
+                    </p>
+                    <button class="w-full bg-emerald-500 text-white font-bold py-3 rounded-lg hover:bg-emerald-600 transition shadow-lg">Reserve Deal</button>
+                </div>
+
+                <!-- Placeholder Deal Card 4 -->
+                <div class="deal-card bg-white p-5 rounded-2xl shadow-xl border-t-4 border-red-400">
+                    <p class="tag bg-red-100 text-red-700">MEAT</p>
+                    <h3 class="text-xl font-bold mt-2 mb-1">Chicken Breasts (1kg)</h3>
+                    <p class="text-stone-600 mb-3 text-sm">from **Butcher's Block**</p>
+                    <div class="flex items-end justify-between mb-4">
+                        <p class="text-3xl font-bold text-red-600">₹199</p>
+                        <p class="text-sm text-stone-400 line-through">₹500</p>
+                    </div>
+                    <p class="text-xs text-red-500 mb-4 font-semibold flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        Pick up until: 5:30 PM today
+                    </p>
+                    <button class="w-full bg-emerald-500 text-white font-bold py-3 rounded-lg hover:bg-emerald-600 transition shadow-lg">Reserve Deal</button>
+                </div>
+            </div>
+
+            <!-- Reserved Deals Section -->
+            <div class="mt-16">
+                <h2 class="text-3xl font-serif font-bold text-stone-800 mb-6 border-b pb-2 flex items-center gap-3">
+                    Your Reserved Pickups (1)
+                    <span class="text-sm font-normal text-white bg-red-500 px-3 py-1 rounded-full">ACTION NEEDED</span>
+                </h2>
+                <div class="bg-emerald-100 p-6 rounded-xl shadow-md flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                    <div class="text-left">
+                        <p class="text-xl font-bold">Reserved: Artisan Sourdough Loaf</p>
+                        <p class="text-stone-600">**The Corner Bakery** | Must pick up by **6:00 PM**</p>
+                        <p class="text-2xl font-extrabold text-emerald-700 mt-2">PAY ON PICKUP: ₹75</p>
+                    </div>
+                    <a href="#" class="w-full md:w-auto bg-white text-emerald-600 font-bold py-3 px-6 rounded-lg border-2 border-emerald-300 hover:bg-emerald-50 transition">
+                        Get Directions
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-4 text-stone-500 text-sm bg-white border-t border-stone-200">
+        &copy; 2025 Daily Dish.
+    </footer>
+
+</body>
+</html>
