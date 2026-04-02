@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seller Dashboard — Daily Dish</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Quicksand', sans-serif; background-color: #F8F7F2; }
+    .font-serif { font-family: 'Playfair Display', serif; }
+  </style>
+</head>
+<body class="text-stone-800 flex flex-col min-h-screen">
+
+<header class="bg-white/90 backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-emerald-100">
+  <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="/" class="text-2xl font-bold text-emerald-600 flex items-center gap-3">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-emerald-500" viewBox="0 0 24 24" fill="currentColor"><path d="M22,9.333V8H2V9.333a9.998,9.998,0,0,0,2.158,6.334L4,22H20l-.158-6.333A9.998,9.998,0,0,0,22,9.333ZM12,2a8,8,0,0,0-8,8v.667h16V10A8,8,0,0,0,12,2Z"/></svg>
+      <span class="font-serif">Daily Dish</span>
+    </a>
+    <nav class="hidden md:flex items-center gap-8">
+      <a href="/seller_dashboard.html" class="text-emerald-600 font-semibold">Dashboard</a>
+      <a href="/seller_selling_history.html" class="text-stone-600 hover:text-emerald-600 transition">Orders</a>
+      <a href="/seller_reviews.html" class="text-stone-600 hover:text-emerald-600 transition">Reviews</a>
+    </nav>
+    <div class="flex items-center gap-4">
+      <a href="/profile.html" class="hidden md:inline text-sm text-stone-500 hover:text-emerald-600 font-semibold">👤 <span data-user-name></span></a>
+      <button data-logout-btn class="px-4 py-2 text-sm text-white bg-red-500 rounded-full hover:bg-red-600 transition">Logout</button>
+    </div>
+  </div>
+</header>
+
+<main class="flex-grow py-10">
+  <div class="container mx-auto px-6">
+    <h1 class="text-4xl font-serif font-bold text-stone-800 mb-8">Seller Dashboard</h1>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white p-8 rounded-2xl shadow-lg border-b-4 border-emerald-400">
+        <p class="text-stone-500 font-semibold mb-2">🌱 Food Saved</p>
+        <div class="text-4xl font-bold text-emerald-600" id="stat-food-saved">—</div>
+        <p class="text-sm text-stone-400 mt-2">items from waste</p>
+      </div>
+      <div class="bg-white p-8 rounded-2xl shadow-lg border-b-4 border-amber-400">
+        <p class="text-stone-500 font-semibold mb-2">💰 Revenue Earned</p>
+        <div class="text-4xl font-bold text-amber-600" id="stat-revenue">₹0</div>
+        <p class="text-sm text-stone-400 mt-2">total from deals</p>
+      </div>
+      <div class="bg-white p-8 rounded-2xl shadow-lg border-b-4 border-blue-400">
+        <p class="text-stone-500 font-semibold mb-2">📦 Total Orders</p>
+        <div class="text-4xl font-bold text-blue-600" id="stat-orders">0</div>
+        <p class="text-sm text-stone-400 mt-2">all time</p>
+      </div>
+      <div class="bg-white p-8 rounded-2xl shadow-lg border-b-4 border-rose-400">
+        <p class="text-stone-500 font-semibold mb-2">⚡ Active Deals</p>
+        <div class="text-4xl font-bold text-rose-600" id="stat-active">0</div>
+        <p class="text-sm text-stone-400 mt-2">live right now</p>
+      </div>
+    </div>
+
+    <!-- Post New Deal Form -->
+    <div class="bg-white p-8 rounded-2xl shadow-lg mb-8 border-l-4 border-emerald-400">
+      <h2 class="text-2xl font-serif font-bold text-stone-800 mb-6">Post a New Deal</h2>
+      <div id="form-error" class="hidden mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm"></div>
+      <form id="deal-form" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input type="text" name="name" placeholder="Product name *" required class="p-3 border border-stone-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+        <select name="category" class="p-3 border border-stone-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+          <option value="bakery">Bakery</option>
+          <option value="produce">Produce</option>
+          <option value="dairy">Dairy</option>
+          <option value="meals">Meals</option>
+          <option value="beverages">Beverages</option>
+          <option value="other">Other</option>
+        </select>
+        <input type="number" name="originalPrice" placeholder="Original price (₹) *" required min="1" class="p-3 border border-stone-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+        <input type="number" name="discountedPrice" placeholder="Discounted price (₹) *" required min="1" class="p-3 border border-stone-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+        <input type="number" name="quantityAvailable" placeholder="Quantity available *" required min="1" class="p-3 border border-stone-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+        <input type="datetime-local" name="pickupBy" required class="p-3 border border-stone-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+
+        <div class="md:col-span-2">
+          <label class="block text-stone-700 font-semibold mb-3">Upload Product Image</label>
+          <div class="border-2 border-dashed border-emerald-300 rounded-lg p-6 text-center bg-emerald-50 hover:bg-emerald-100 transition cursor-pointer">
+            <input type="file" name="image" accept="image/*" class="hidden" id="product-image">
+            <label for="product-image" class="cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-emerald-500 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+              <p class="text-emerald-600 font-semibold">Click to upload or drag and drop</p>
+              <p class="text-sm text-stone-500">PNG, JPG, GIF up to 10MB</p>
+            </label>
+          </div>
+          <div id="image-preview" class="mt-3 hidden"><img id="preview-img" src="" alt="Preview" class="max-h-32 mx-auto rounded-lg shadow"></div>
+        </div>
+
+        <textarea name="description" placeholder="Description (optional)" class="md:col-span-2 p-3 border border-stone-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 h-24"></textarea>
+        <button type="submit" id="post-btn" class="md:col-span-2 bg-emerald-500 text-white font-bold py-3 rounded-lg hover:bg-emerald-600 transition shadow-lg">
+          Publish Deal
+        </button>
+      </form>
+    </div>
+
+    <!-- Active Deals Table -->
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden border-t-4 border-emerald-400 mb-8">
+      <div class="p-8 border-b border-stone-200 flex items-center justify-between">
+        <h2 class="text-2xl font-serif font-bold text-stone-800">Your Active Deals</h2>
+        <button onclick="loadMyDeals()" class="text-sm text-emerald-600 hover:underline">Refresh</button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-stone-50 text-left text-xs font-bold text-stone-500 uppercase tracking-wide">
+            <tr>
+              <th class="px-6 py-4">Product</th>
+              <th class="px-6 py-4">Price</th>
+              <th class="px-6 py-4">Qty Left</th>
+              <th class="px-6 py-4">Sold</th>
+              <th class="px-6 py-4">Pickup By</th>
+              <th class="px-6 py-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="deals-table-body" class="divide-y divide-stone-100">
+            <tr><td colspan="6" class="px-6 py-8 text-center text-stone-400">Loading your deals…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="text-center py-4 text-stone-500 text-sm bg-white border-t border-stone-200">© 2025 Daily Dish.</footer>
+
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script src="/api.js"></script>
+<script>
+  if (!requireAuth('seller')) {}
+
+  // ── Socket.IO — authenticated room ─────────────────────────────────────────
+  const socket = io();
+  socket.on('connect', () => { const t = getToken(); if (t) socket.emit('authenticate', t); });
+
+  // Live reservation → update stats + deals table + show banner
+  socket.on('new_reservation', data => {
+    loadStats();
+    loadMyDeals();
+    // Flash the stats cards
+    ['stat-active','stat-orders','stat-revenue','stat-food-saved'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.style.transition = 'color 0.2s';
+      el.style.color = '#10b981';
+      setTimeout(() => el.style.color = '', 1200);
+    });
+    showToast(`🛒 ${data.buyerName} just reserved ${data.quantity}× "${data.dealName}" — ${data.remaining} left`, 'warning');
+  });
+
+  socket.on('reservation_cancelled', data => {
+    loadStats();
+    loadMyDeals();
+    showToast(`❌ Reservation cancelled: ${data.dealName} (qty ${data.quantity} back in stock)`, 'error');
+  });
+
+  // ── Image preview ───────────────────────────────────────────────────────────
+  document.getElementById('product-image').addEventListener('change', function () {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('preview-img').src = e.target.result;
+      document.getElementById('image-preview').classList.remove('hidden');
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // ── Post deal ───────────────────────────────────────────────────────────────
+  document.getElementById('deal-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('post-btn');
+    const errEl = document.getElementById('form-error');
+    btn.disabled = true; btn.textContent = 'Publishing…';
+    errEl.classList.add('hidden');
+    try {
+      const fd = new FormData(e.target);
+      const res = await fetch('/api/deals', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${getToken()}` },
+        body: fd
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed');
+      showToast('Deal published! 🎉');
+      e.target.reset();
+      document.getElementById('image-preview').classList.add('hidden');
+      loadMyDeals();
+      loadStats();
+    } catch (err) {
+      errEl.textContent = err.message;
+      errEl.classList.remove('hidden');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Publish Deal';
+    }
+  });
+
+  // ── Stats ───────────────────────────────────────────────────────────────────
+  async function loadStats() {
+    try {
+      const [dealsData, ordersData] = await Promise.all([
+        apiFetch('/deals/my'),
+        apiFetch('/orders/seller')
+      ]);
+      const deals  = dealsData.deals  || [];
+      const orders = ordersData.orders || [];
+      const active = deals.filter(d => d.isActive && new Date(d.pickupBy) > new Date() && d.quantityAvailable > 0);
+      const revenue   = orders.filter(o => o.status !== 'cancelled').reduce((s, o) => s + o.totalPaid, 0);
+      const totalSold = orders.filter(o => o.status !== 'cancelled').reduce((s, o) => s + o.quantity, 0);
+      document.getElementById('stat-active').textContent  = active.length;
+      document.getElementById('stat-revenue').textContent = `₹${revenue.toFixed(0)}`;
+      document.getElementById('stat-orders').textContent  = orders.filter(o => o.status !== 'cancelled').length;
+      document.getElementById('stat-food-saved').textContent = totalSold;
+    } catch (e) {}
+  }
+
+  // ── My deals table ──────────────────────────────────────────────────────────
+  async function loadMyDeals() {
+    try {
+      const data  = await apiFetch('/deals/my');
+      const tbody = document.getElementById('deals-table-body');
+      if (!data.deals.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-stone-400">No deals yet. Post your first one above!</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.deals.map(d => {
+        const expired     = new Date(d.pickupBy) < new Date();
+        const statusBadge = expired
+          ? '<span class="px-2 py-1 bg-stone-100 text-stone-500 text-xs rounded-full">Expired</span>'
+          : d.isActive
+            ? '<span class="px-2 py-1 bg-emerald-100 text-emerald-700 text-xs rounded-full">Active</span>'
+            : '<span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">Paused</span>';
+        // Show reserved count badge
+        const reservedBadge = d.quantitySold > 0
+          ? `<span class="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full font-bold">${d.quantitySold} reserved</span>`
+          : '';
+        return `
+          <tr class="hover:bg-stone-50">
+            <td class="px-6 py-4">
+              <div class="font-semibold">${d.name} ${reservedBadge}</div>
+              <div class="text-xs text-stone-400">${d.category}</div>
+              ${statusBadge}
+            </td>
+            <td class="px-6 py-4">
+              <span class="text-emerald-600 font-bold">₹${d.discountedPrice}</span>
+              <span class="text-stone-400 text-xs line-through ml-1">₹${d.originalPrice}</span>
+            </td>
+            <td class="px-6 py-4 font-semibold ${d.quantityAvailable <= 2 && !expired ? 'text-red-500' : ''}">${d.quantityAvailable}</td>
+            <td class="px-6 py-4 text-blue-600 font-semibold">${d.quantitySold || 0}</td>
+            <td class="px-6 py-4 text-sm text-stone-500">${new Date(d.pickupBy).toLocaleString()}</td>
+            <td class="px-6 py-4">
+              <button onclick="toggleDeal('${d._id}', ${!d.isActive})"
+                      class="text-xs px-3 py-1 rounded-full border mr-2 ${d.isActive ? 'border-yellow-400 text-yellow-600 hover:bg-yellow-50' : 'border-emerald-400 text-emerald-600 hover:bg-emerald-50'}">
+                ${d.isActive ? 'Pause' : 'Resume'}
+              </button>
+              <button onclick="deleteDeal('${d._id}')" class="text-xs px-3 py-1 rounded-full border border-red-300 text-red-500 hover:bg-red-50">Delete</button>
+            </td>
+          </tr>`;
+      }).join('');
+    } catch (e) {}
+  }
+
+  async function toggleDeal(id, newActive) {
+    try {
+      await apiFetch(`/deals/${id}`, { method: 'PATCH', body: JSON.stringify({ isActive: newActive }) });
+      loadMyDeals();
+    } catch (e) { showToast(e.message, 'error'); }
+  }
+
+  async function deleteDeal(id) {
+    if (!confirm('⚠️ Are you sure you want to delete this deal?\n\nThis action cannot be undone. The deal will be permanently removed.')) return;
+    
+    try {
+      const response = await apiFetch(`/deals/${id}`, { method: 'DELETE' });
+      showToast(response.message || 'Deal deleted successfully.', 'success');
+      loadMyDeals();
+      loadStats();
+    } catch (e) { 
+      showToast('Failed to delete deal: ' + e.message, 'error'); 
+    }
+  }
+
+  loadStats();
+  loadMyDeals();
+</script>
+</body>
+</html>

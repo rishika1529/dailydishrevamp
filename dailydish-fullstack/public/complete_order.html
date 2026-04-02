@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Order - Daily Dish</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Quicksand', sans-serif; background-color: #F8F7F2; }
+    .font-serif { font-family: 'Playfair Display', serif; }
+  </style>
+</head>
+<body class="text-stone-800 flex flex-col min-h-screen">
+
+<header class="bg-white/90 backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-emerald-100">
+  <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="/" class="text-2xl font-bold text-emerald-600 flex items-center gap-3">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-emerald-500" viewBox="0 0 24 24" fill="currentColor"><path d="M22,9.333V8H2V9.333a9.998,9.998,0,0,0,2.158,6.334L4,22H20l-.158-6.333A9.998,9.998,0,0,0,22,9.333ZM12,2a8,8,0,0,0-8,8v.667h16V10A8,8,0,0,0,12,2Z"/></svg>
+      <span class="font-serif">Daily Dish</span>
+    </a>
+    <div class="flex items-center gap-4">
+      <a href="/seller_selling_history.html" class="px-4 py-2 text-sm text-stone-600 hover:text-emerald-600 font-semibold">← Back to Orders</a>
+      <button data-logout-btn class="px-4 py-2 text-sm text-white bg-red-500 rounded-full hover:bg-red-600 transition">Logout</button>
+    </div>
+  </div>
+</header>
+
+<main class="flex-grow py-10 flex items-center justify-center">
+  <div class="container mx-auto px-6 max-w-2xl">
+    
+    <!-- OTP Verification Card -->
+    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border-t-8 border-emerald-500">
+      
+      <!-- Header Section -->
+      <div class="bg-gradient-to-r from-emerald-500 to-teal-600 p-10 text-center text-white">
+        <div class="inline-block p-4 bg-white/20 rounded-full mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h1 class="text-4xl font-serif font-bold mb-2">Complete Order</h1>
+        <p class="text-emerald-100 text-lg">Verify buyer's OTP to complete the purchase</p>
+      </div>
+
+      <!-- Order Details Section -->
+      <div id="order-details" class="p-10 bg-stone-50 border-b border-stone-200">
+        <div class="text-center">
+          <div class="animate-pulse">Loading order details...</div>
+        </div>
+      </div>
+
+      <!-- OTP Entry Section -->
+      <div class="p-10">
+        <div class="mb-8">
+          <label class="block text-stone-700 font-bold mb-3 text-lg">Enter Buyer's 6-Character OTP</label>
+          <p class="text-stone-500 text-sm mb-6">Ask the buyer for their unique OTP code and enter it below to verify and complete the transaction.</p>
+          
+          <input 
+            id="otp-input" 
+            type="text" 
+            maxlength="6" 
+            placeholder="e.g., A3K9XZ"
+            autocomplete="off"
+            class="w-full px-6 py-5 border-3 border-stone-300 rounded-2xl text-center font-mono text-3xl font-bold uppercase tracking-[0.5em] focus:outline-none focus:ring-4 focus:ring-emerald-500 focus:border-emerald-500 shadow-inner bg-stone-50 transition-all"
+            oninput="this.value=this.value.toUpperCase(); enableVerifyButton();">
+        </div>
+
+        <!-- Error/Success Message -->
+        <div id="message-box" class="hidden mb-6 p-4 rounded-xl font-semibold text-sm"></div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-4">
+          <a href="/seller_selling_history.html" 
+             class="flex-1 py-4 border-2 border-stone-300 rounded-xl font-bold text-center hover:bg-stone-50 transition text-stone-700">
+            Cancel
+          </a>
+          <button 
+            id="verify-btn"
+            onclick="verifyOTP()" 
+            disabled
+            class="flex-1 py-4 bg-emerald-500 text-white rounded-xl font-bold hover:bg-emerald-600 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-emerald-500">
+            Verify & Complete
+          </button>
+        </div>
+      </div>
+
+      <!-- Info Section -->
+      <div class="p-6 bg-blue-50 border-t border-blue-100">
+        <div class="flex items-start gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div class="text-sm text-blue-800">
+            <p class="font-bold mb-1">Important:</p>
+            <p>Only complete this order when the buyer is present and has provided their OTP. This action cannot be undone.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer class="text-center py-4 text-stone-500 text-sm bg-white border-t border-stone-200">© 2025 Daily Dish.</footer>
+
+<script src="/api.js"></script>
+<script>
+if (!requireAuth('seller')) {}
+
+let orderId = null;
+
+// Get order ID from URL
+function getOrderIdFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('orderId');
+}
+
+// Load order details
+async function loadOrderDetails() {
+  try {
+    orderId = getOrderIdFromURL();
+    
+    if (!orderId) {
+      showMessage('No order ID provided. Please select an order to complete.', 'error');
+      setTimeout(() => window.location.href = '/seller_selling_history.html', 2000);
+      return;
+    }
+
+    // Fetch all seller orders
+    const data = await apiFetch('/orders/seller');
+    const orders = data.orders || [];
+    
+    // Find the specific order
+    const order = orders.find(o => o._id === orderId);
+    
+    if (!order) {
+      showMessage('Order not found.', 'error');
+      setTimeout(() => window.location.href = '/seller_selling_history.html', 2000);
+      return;
+    }
+
+    // Check if order is already completed or cancelled
+    if (order.status === 'sold') {
+      showMessage('This order has already been completed!', 'success');
+      setTimeout(() => window.location.href = '/seller_selling_history.html', 2000);
+      return;
+    }
+
+    if (order.status === 'cancelled') {
+      showMessage('This order has been cancelled.', 'error');
+      setTimeout(() => window.location.href = '/seller_selling_history.html', 2000);
+      return;
+    }
+
+    if (!order.buyerConfirmed) {
+      showMessage('Waiting for buyer to confirm OTP receipt...', 'warning');
+      document.getElementById('verify-btn').disabled = true;
+    }
+
+    // Display order details
+    const detailsHTML = `
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+          <p class="text-xs text-stone-500 uppercase font-bold mb-2">Product</p>
+          <p class="text-xl font-bold text-stone-800">${order.dealSnapshot.name}</p>
+          <p class="text-sm text-stone-500">${order.dealSnapshot.category}</p>
+        </div>
+        
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+          <p class="text-xs text-stone-500 uppercase font-bold mb-2">Buyer</p>
+          <p class="text-xl font-bold text-stone-800">${order.buyer?.name || 'Unknown'}</p>
+          <p class="text-sm text-stone-500">${order.buyer?.email || ''}</p>
+        </div>
+        
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+          <p class="text-xs text-stone-500 uppercase font-bold mb-2">Quantity</p>
+          <p class="text-3xl font-bold text-emerald-600">${order.quantity}</p>
+        </div>
+        
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+          <p class="text-xs text-stone-500 uppercase font-bold mb-2">Total Amount</p>
+          <p class="text-3xl font-bold text-emerald-600">₹${order.totalPaid}</p>
+        </div>
+      </div>
+      
+      <div class="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+        <p class="text-sm text-amber-800">
+          <span class="font-bold">Expected OTP:</span> The buyer received a unique 6-character code. Ask them for it and enter above.
+        </p>
+      </div>
+    `;
+    
+    document.getElementById('order-details').innerHTML = detailsHTML;
+    
+    // Focus on OTP input
+    document.getElementById('otp-input').focus();
+    
+  } catch (error) {
+    showMessage('Failed to load order details: ' + error.message, 'error');
+    setTimeout(() => window.location.href = '/seller_selling_history.html', 2000);
+  }
+}
+
+// Enable verify button when OTP is 6 characters
+function enableVerifyButton() {
+  const input = document.getElementById('otp-input');
+  const btn = document.getElementById('verify-btn');
+  btn.disabled = input.value.length !== 6;
+}
+
+// Verify OTP
+async function verifyOTP() {
+  const otpInput = document.getElementById('otp-input');
+  const verifyBtn = document.getElementById('verify-btn');
+  const otp = otpInput.value.trim().toUpperCase();
+  
+  if (otp.length !== 6) {
+    showMessage('Please enter a valid 6-character OTP.', 'error');
+    return;
+  }
+  
+  verifyBtn.disabled = true;
+  verifyBtn.textContent = 'Verifying...';
+  
+  try {
+    const response = await apiFetch('/orders/verify-pickup', {
+      method: 'POST',
+      body: JSON.stringify({ pickupCode: otp })
+    });
+    
+    showMessage('✅ ' + response.message, 'success');
+    
+    // Show success for 2 seconds then redirect
+    setTimeout(() => {
+      window.location.href = '/seller_selling_history.html';
+    }, 2000);
+    
+  } catch (error) {
+    showMessage('❌ ' + error.message, 'error');
+    verifyBtn.disabled = false;
+    verifyBtn.textContent = 'Verify & Complete';
+    otpInput.value = '';
+    otpInput.focus();
+  }
+}
+
+// Show message
+function showMessage(message, type = 'info') {
+  const messageBox = document.getElementById('message-box');
+  messageBox.textContent = message;
+  messageBox.className = 'mb-6 p-4 rounded-xl font-semibold text-sm ';
+  
+  if (type === 'success') {
+    messageBox.className += 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+  } else if (type === 'error') {
+    messageBox.className += 'bg-red-50 text-red-700 border border-red-200';
+  } else if (type === 'warning') {
+    messageBox.className += 'bg-amber-50 text-amber-700 border border-amber-200';
+  } else {
+    messageBox.className += 'bg-blue-50 text-blue-700 border border-blue-200';
+  }
+  
+  messageBox.classList.remove('hidden');
+}
+
+// Handle Enter key
+document.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter' && document.getElementById('verify-btn').disabled === false) {
+    verifyOTP();
+  }
+});
+
+// Load order details on page load
+loadOrderDetails();
+</script>
+
+</body>
+</html>

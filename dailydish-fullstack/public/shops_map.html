@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Dish | Shops Map</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    body{font-family:'Quicksand',sans-serif;background-color:#F8F7F2}
+    .font-serif{font-family:'Playfair Display',serif}
+    #map{height:500px;border-radius:16px;overflow:hidden}
+  </style>
+</head>
+<body class="text-stone-800 flex flex-col min-h-screen">
+<header class="bg-white/90 backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-emerald-100">
+  <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="/" class="text-2xl font-bold text-emerald-600 flex items-center gap-3">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-emerald-500" viewBox="0 0 24 24" fill="currentColor"><path d="M22,9.333V8H2V9.333a9.998,9.998,0,0,0,2.158,6.334L4,22H20l-.158-6.333A9.998,9.998,0,0,0,22,9.333ZM12,2a8,8,0,0,0-8,8v.667h16V10A8,8,0,0,0,12,2Z"/></svg>
+      <span class="font-serif">Daily Dish</span>
+    </a>
+    <nav id="nav-links" class="flex items-center gap-4"></nav>
+  </div>
+</header>
+
+<main class="flex-grow py-10">
+  <div class="container mx-auto px-6">
+    <h1 class="text-4xl font-serif font-bold mb-8">Shops Near You</h1>
+
+    <div id="map" class="shadow-xl mb-8"></div>
+
+    <h2 class="text-2xl font-serif font-bold mb-5">Shops with Active Deals</h2>
+    <div id="shop-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <p class="col-span-3 text-center text-stone-400 py-8">Loading…</p>
+    </div>
+  </div>
+</main>
+<footer class="text-center py-4 text-stone-500 text-sm bg-white border-t border-stone-200">© 2025 Daily Dish.</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="/api.js"></script>
+<script>
+  // Nav bar based on login state
+  const navEl = document.getElementById('nav-links');
+  if (isLoggedIn()) {
+    const user = getUser();
+    const dash = isRole('seller') ? '/seller_dashboard.html' : '/buyer_dashboard.html';
+    navEl.innerHTML = `<a href="${dash}" class="px-4 py-2 bg-emerald-500 text-white font-semibold rounded-full">Dashboard</a>
+      <button onclick="logout()" class="px-4 py-2 text-red-500 font-semibold hover:bg-red-50 rounded-full">Logout</button>`;
+  } else {
+    navEl.innerHTML = `<a href="/login.html" class="px-4 py-2 text-emerald-600 font-semibold rounded-full hover:bg-emerald-50">Login</a>
+      <a href="/signup.html" class="px-4 py-2 bg-emerald-500 text-white font-semibold rounded-full">Sign Up</a>`;
+  }
+
+  // Init map centered roughly on user location or India default
+  const map = L.map('map').setView([20.5937, 78.9629], 5);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors', maxZoom: 18
+  }).addTo(map);
+
+  // Geolocation
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(pos => {
+      map.setView([pos.coords.latitude, pos.coords.longitude], 13);
+      L.marker([pos.coords.latitude, pos.coords.longitude])
+        .addTo(map)
+        .bindPopup('<b>You are here</b>')
+        .openPopup();
+    });
+  }
+
+  // Load shops from active deals
+  apiFetch('/deals').then(data => {
+    const deals = data.deals || [];
+    // Group by seller/shop
+    const shopMap = {};
+    deals.forEach(d => {
+      const key = d.seller?._id || d.shopName;
+      if (!shopMap[key]) shopMap[key] = { name: d.shopName, address: d.seller?.shopAddress || '', deals: [] };
+      shopMap[key].deals.push(d);
+    });
+    const shops = Object.values(shopMap);
+
+    const container = document.getElementById('shop-cards');
+    if (!shops.length) {
+      container.innerHTML = '<p class="col-span-3 text-center text-stone-400 py-8">No shops with active deals right now.</p>';
+      return;
+    }
+    container.innerHTML = shops.map(s => `
+      <div class="bg-white p-6 rounded-xl shadow border border-stone-200">
+        <div class="h-12 w-12 bg-emerald-500 rounded-full flex items-center justify-center mb-4">
+          <span class="text-white text-xl font-bold">${s.name[0]}</span>
+        </div>
+        <h3 class="font-bold text-lg">${s.name}</h3>
+        <p class="text-sm text-stone-500 mb-3">${s.address || 'Address not provided'}</p>
+        <p class="text-emerald-600 font-semibold text-sm">${s.deals.length} active deal${s.deals.length !== 1 ? 's' : ''}</p>
+        <a href="${isLoggedIn() ? '/buyer_dashboard.html' : '/signup.html'}"
+           class="mt-3 block text-center px-4 py-2 bg-emerald-500 text-white text-sm font-bold rounded-lg hover:bg-emerald-600 transition">
+          View Deals
+        </a>
+      </div>`).join('');
+  }).catch(() => {});
+</script>
+</body>
+</html>

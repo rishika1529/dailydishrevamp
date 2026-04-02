@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Dish | Buyer Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Quicksand', sans-serif; background-color: #F8F7F2; }
+    .font-serif { font-family: 'Playfair Display', serif; }
+    .deal-card { transition: transform 0.2s ease; }
+    .deal-card:hover { transform: translateY(-3px); }
+  </style>
+</head>
+<body class="text-stone-800 flex flex-col min-h-screen">
+
+<header class="bg-white/90 backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-emerald-100">
+  <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="/" class="text-2xl font-bold text-emerald-600 flex items-center gap-3">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-emerald-500" viewBox="0 0 24 24" fill="currentColor"><path d="M22,9.333V8H2V9.333a9.998,9.998,0,0,0,2.158,6.334L4,22H20l-.158-6.333A9.998,9.998,0,0,0,22,9.333ZM12,2a8,8,0,0,0-8,8v.667h16V10A8,8,0,0,0,12,2Z"/></svg>
+      <span class="font-serif">Daily Dish</span>
+    </a>
+    <nav class="hidden md:flex items-center gap-8">
+      <a href="/buyer_dashboard.html" class="text-emerald-600 font-semibold">Deals</a>
+      <a href="/savings.html" class="text-stone-600 hover:text-emerald-600 transition">Savings</a>
+      <a href="/purchase_history.html" class="text-stone-600 hover:text-emerald-600 transition">History</a>
+      <a href="/reviews.html" class="text-stone-600 hover:text-emerald-600 transition">Reviews</a>
+    </nav>
+    <div class="flex items-center gap-4">
+      <a href="/profile.html" class="hidden md:inline text-sm text-stone-500 hover:text-emerald-600 font-semibold">👤 <span data-user-name></span></a>
+      <button data-logout-btn class="px-4 py-2 text-sm text-white bg-red-500 rounded-full hover:bg-red-600 transition">Logout</button>
+    </div>
+  </div>
+</header>
+
+<main class="flex-grow py-10">
+  <div class="container mx-auto px-6">
+    <h1 class="text-4xl font-serif font-bold text-stone-800 mb-8">Your Deal Hunt</h1>
+
+    <!-- Filters -->
+    <div class="bg-white p-6 rounded-xl shadow-lg mb-8 border border-stone-200">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <input id="search-input" type="text" placeholder="Search by product or shop…" class="p-3 border border-stone-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+        <select id="category-filter" class="p-3 border border-stone-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+          <option value="all">Category: All</option>
+          <option value="bakery">Bakery</option>
+          <option value="produce">Produce</option>
+          <option value="dairy">Dairy</option>
+          <option value="meals">Meals</option>
+          <option value="beverages">Beverages</option>
+          <option value="other">Other</option>
+        </select>
+        <div></div>
+        <button id="apply-filters" class="bg-emerald-500 text-white font-bold p-3 rounded-lg hover:bg-emerald-600 transition">Apply Filters</button>
+      </div>
+    </div>
+
+    <h2 id="deals-count-heading" class="text-3xl font-serif font-bold text-stone-800 mb-6 border-b pb-2">Near-Expiry Deals Today (0)</h2>
+    <div id="deal-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <p class="col-span-4 text-center text-stone-400 py-10">Loading deals…</p>
+    </div>
+
+    <div class="mt-16">
+      <h2 class="text-3xl font-serif font-bold text-stone-800 mb-6 border-b pb-2" id="reserved-count">Your Reserved Pickups (0)</h2>
+      <div id="reserved-list"></div>
+    </div>
+  </div>
+</main>
+
+<footer class="text-center py-4 text-stone-500 text-sm bg-white border-t border-stone-200">© 2025 Daily Dish.</footer>
+
+<!-- Reserve Quantity Modal -->
+<div id="reserve-modal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+  <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-full mx-4">
+    <h3 class="text-2xl font-serif font-bold mb-2" id="modal-title"></h3>
+    <p class="text-stone-500 mb-4" id="modal-shop"></p>
+    <p class="text-3xl font-bold text-emerald-600 mb-6" id="modal-price"></p>
+    <label class="block text-sm font-bold mb-2 text-stone-700">Quantity</label>
+    <input type="number" id="modal-qty" min="1" value="1" class="w-full p-3 border border-stone-300 rounded-lg mb-6 focus:ring-emerald-500 focus:outline-none">
+    <div class="flex gap-3">
+      <button id="modal-cancel" class="flex-1 py-3 border-2 border-stone-300 rounded-lg font-bold hover:bg-stone-50">Cancel</button>
+      <button id="modal-confirm" class="flex-1 py-3 bg-emerald-500 text-white rounded-lg font-bold hover:bg-emerald-600">Reserve</button>
+    </div>
+  </div>
+</div>
+
+<!-- OTP Confirmation Modal -->
+<div id="code-confirm-modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+  <div class="bg-white p-10 rounded-2xl shadow-2xl text-center max-w-sm w-full mx-4">
+    <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
+      <svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+      </svg>
+    </div>
+    <h3 class="text-2xl font-serif font-bold mb-2">Reservation Confirmed!</h3>
+    <p class="text-stone-600 mb-2">Your unique verification OTP is:</p>
+    <div class="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-6 mb-4 relative">
+      <div id="confirm-pickup-code" class="text-4xl font-mono font-bold text-emerald-600 tracking-[0.3em]"></div>
+    </div>
+    <button id="copy-otp-btn" class="mb-4 px-4 py-2 text-sm bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg transition font-semibold inline-flex items-center gap-2">
+      📋 Copy OTP
+    </button>
+    <p class="text-stone-500 text-sm mb-6">Show this OTP to the seller to complete your purchase. <strong class="text-red-500">Keep it safe — without it, your purchase cannot be verified!</strong></p>
+    <button id="code-confirm-btn" class="w-full py-3 bg-emerald-500 text-white rounded-xl font-bold hover:bg-emerald-600 transition">
+      I've Saved My OTP ✓
+    </button>
+  </div>
+</div>
+
+<script src="/api.js"></script>
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script>
+  if (!requireAuth('buyer')) {}
+
+  const socket = io();
+  let allDeals = [];
+  let selectedDeal = null;
+
+  // ── Authenticated socket ────────────────────────────────────────────────────
+  socket.on('connect', () => {
+    const t = getToken();
+    if (t) socket.emit('authenticate', t);
+  });
+
+  // Live stock update → update the specific deal card quantity without full reload
+  socket.on('deal_stock_updated', ({ dealId, remaining }) => {
+    if (remaining !== undefined) {
+      const deal = allDeals.find(d => d._id === dealId || d._id === String(dealId));
+      if (deal) { deal.quantityAvailable = remaining; renderDeals(allDeals); }
+    } else {
+      loadDeals();
+    }
+  });
+
+  // New deal posted → reload
+  socket.on('new_deal', () => {
+    showToast('🔥 New deal just posted nearby!', 'warning');
+    loadDeals();
+  });
+
+  // Seller confirmed sale → notify buyer
+  socket.on('sale_confirmed', data => {
+    showToast(`✅ Your purchase of "${data.dealName}" was confirmed by ${data.shopName}!`);
+    loadReservedOrders();
+  });
+
+  async function loadDeals() {
+    const search = document.getElementById('search-input').value.trim();
+    const category = document.getElementById('category-filter').value;
+    let url = '/deals?';
+    if (search) url += `search=${encodeURIComponent(search)}&`;
+    if (category !== 'all') url += `category=${category}`;
+
+    try {
+      const data = await apiFetch(url);
+      allDeals = data.deals || [];
+      renderDeals(allDeals);
+    } catch (e) {
+      document.getElementById('deal-list').innerHTML = '<p class="col-span-4 text-center text-red-400 py-10">Failed to load deals.</p>';
+    }
+  }
+
+  function renderDeals(deals) {
+    const container = document.getElementById('deal-list');
+    document.getElementById('deals-count-heading').textContent = `Near-Expiry Deals Today (${deals.length})`;
+    if (!deals.length) {
+      container.innerHTML = '<p class="col-span-4 text-center text-stone-400 py-10">No deals available right now. Check back soon!</p>';
+      return;
+    }
+    const categoryColors = { bakery:'emerald', produce:'lime', dairy:'sky', meals:'amber', beverages:'blue', other:'purple' };
+    container.innerHTML = deals.map(d => {
+      const pct = Math.round(((d.originalPrice - d.discountedPrice) / d.originalPrice) * 100);
+      const c = categoryColors[d.category] || 'stone';
+      const expiry = new Date(d.pickupBy);
+      const now = new Date();
+      const hoursLeft = Math.round((expiry - now) / 3600000);
+      const expiryText = hoursLeft <= 0 ? 'Expired' : hoursLeft < 1 ? 'Expires soon!' : `${hoursLeft}h left`;
+      const imgHtml = d.image ? `<img src="${d.image}" class="w-full h-36 object-cover rounded-lg mb-4">` : `<div class="w-full h-24 bg-${c}-100 rounded-lg flex items-center justify-center mb-4 text-4xl">🍱</div>`;
+      return `
+        <article class="deal-card bg-white rounded-xl shadow-md border border-stone-200 overflow-hidden" data-id="${d._id}">
+          <div class="p-5">
+            ${imgHtml}
+            <span class="inline-block px-2 py-1 bg-${c}-100 text-${c}-700 text-xs font-bold rounded-full mb-2">${d.category}</span>
+            <h3 class="font-bold text-base leading-snug mb-1">${d.name}</h3>
+            <p class="text-xs text-stone-500 mb-3">${d.shopName} • ${expiryText}</p>
+            <div class="flex items-center gap-2 mb-4">
+              <span class="text-emerald-600 font-bold text-xl">₹${d.discountedPrice}</span>
+              <span class="text-stone-400 text-sm line-through">₹${d.originalPrice}</span>
+              <span class="ml-auto text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-1 rounded-full">${pct}% off</span>
+            </div>
+            <p class="text-xs text-stone-400 mb-4">${d.quantityAvailable} left</p>
+            <button onclick="openReserveModal('${d._id}')"
+                    class="w-full py-2 bg-emerald-500 text-white font-bold rounded-lg hover:bg-emerald-600 transition text-sm ${d.quantityAvailable < 1 ? 'opacity-50 cursor-not-allowed' : ''}"
+                    ${d.quantityAvailable < 1 ? 'disabled' : ''}>
+              ${d.quantityAvailable < 1 ? 'Sold Out' : 'Reserve Now'}
+            </button>
+          </div>
+        </article>`;
+    }).join('');
+  }
+
+  async function loadReservedOrders() {
+    try {
+      const data = await apiFetch('/orders/my');
+      const active = (data.orders || []).filter(o => o.status === 'reserved');
+      const sold = (data.orders || []).filter(o => o.status === 'sold');
+      const el = document.getElementById('reserved-list');
+      document.getElementById('reserved-count').textContent = `Your Orders (${active.length + sold.length})`;
+      if (!active.length && !sold.length) {
+        el.innerHTML = '<p class="text-stone-400">You have no active reservations.</p>';
+        return;
+      }
+      const allOrders = [...active, ...sold].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      el.innerHTML = allOrders.map(o => {
+        const isSold = o.status === 'sold';
+        const isReserved = o.status === 'reserved';
+        return `
+        <div class="bg-white p-5 rounded-xl shadow border border-stone-200 flex items-center justify-between mb-4 ${isSold ? 'border-emerald-200 bg-emerald-50' : ''}">
+          <div>
+            <p class="font-bold ${isSold ? 'text-emerald-800' : ''}">${o.dealSnapshot.name}</p>
+            <p class="text-sm text-stone-500">${o.dealSnapshot.shopName} • Qty: ${o.quantity}</p>
+            ${isReserved ? `
+              <div class="mt-2 flex items-center gap-2">
+                <span class="text-xs font-semibold text-stone-500">Your OTP:</span>
+                <span class="font-mono text-lg font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-lg tracking-widest">${o.pickupCode}</span>
+                <button onclick="copyOTP('${o.pickupCode}')" class="text-xs bg-stone-100 hover:bg-stone-200 px-2 py-1 rounded transition" title="Copy OTP">📋</button>
+              </div>
+              <p class="text-xs text-amber-600 mt-1 font-semibold">⏳ Awaiting OTP verification by seller</p>
+            ` : ''}
+            ${isSold ? '<p class="text-xs text-emerald-600 mt-1 font-semibold">✅ OTP Verified — Purchase Complete</p>' : ''}
+          </div>
+          <div class="text-right">
+            <p class="text-emerald-600 font-bold text-lg">₹${o.totalPaid}</p>
+            ${isReserved ? '<button onclick="cancelOrder(\'' + o._id + '\')" class="text-xs text-red-500 hover:underline mt-2">Cancel</button>' : ''}
+          </div>
+        </div>`;
+      }).join('');
+    } catch (e) {}
+  }
+
+  function openReserveModal(dealId) {
+    selectedDeal = allDeals.find(d => d._id === dealId);
+    if (!selectedDeal) return;
+    document.getElementById('modal-title').textContent = selectedDeal.name;
+    document.getElementById('modal-shop').textContent = selectedDeal.shopName;
+    document.getElementById('modal-price').textContent = `₹${selectedDeal.discountedPrice} / item`;
+    document.getElementById('modal-qty').max = selectedDeal.quantityAvailable;
+    document.getElementById('modal-qty').value = 1;
+    document.getElementById('reserve-modal').classList.remove('hidden');
+  }
+
+  document.getElementById('modal-cancel').addEventListener('click', () => {
+    document.getElementById('reserve-modal').classList.add('hidden');
+    selectedDeal = null;
+  });
+
+  document.getElementById('modal-confirm').addEventListener('click', async () => {
+    if (!selectedDeal) return;
+    const qty = parseInt(document.getElementById('modal-qty').value);
+    try {
+      const data = await apiFetch('/orders', { method: 'POST', body: JSON.stringify({ dealId: selectedDeal._id, quantity: qty }) });
+      document.getElementById('reserve-modal').classList.add('hidden');
+
+      // Show code confirmation modal
+      document.getElementById('confirm-pickup-code').textContent = data.order.pickupCode;
+      document.getElementById('code-confirm-modal').classList.remove('hidden');
+
+      // Store order data for later use
+      window.pendingOrder = data.order;
+      window.pendingDeal = selectedDeal;
+      window.pendingQty = qty;
+
+    } catch (e) {
+      showToast(e.message, 'error');
+    }
+  });
+
+  // Copy OTP helper
+  function copyOTP(code) {
+    navigator.clipboard.writeText(code).then(() => showToast('OTP copied to clipboard! 📋'));
+  }
+
+  // Copy OTP from modal
+  document.getElementById('copy-otp-btn').addEventListener('click', () => {
+    const code = document.getElementById('confirm-pickup-code').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+      document.getElementById('copy-otp-btn').innerHTML = '✅ Copied!';
+      setTimeout(() => { document.getElementById('copy-otp-btn').innerHTML = '📋 Copy OTP'; }, 2000);
+    });
+  });
+
+  // Code confirmation button
+  document.getElementById('code-confirm-btn').addEventListener('click', async () => {
+    try {
+      await apiFetch('/orders/confirm-code', {
+        method: 'POST',
+        body: JSON.stringify({ orderId: window.pendingOrder._id })
+      });
+
+      document.getElementById('code-confirm-modal').classList.add('hidden');
+
+      // Now show success message and update UI
+      showToast(`Reserved ${window.pendingQty}x ${window.pendingDeal.name}! Your OTP has been generated. 🔐`);
+      selectedDeal = null;
+      window.pendingOrder = null;
+      window.pendingDeal = null;
+      window.pendingQty = null;
+
+      loadDeals();
+      loadReservedOrders();
+    } catch (e) {
+      showToast(e.message, 'error');
+    }
+  });
+
+  async function cancelOrder(orderId) {
+    if (!confirm('Cancel this reservation?')) return;
+    try {
+      await apiFetch(`/orders/${orderId}/status`, { method: 'PATCH', body: JSON.stringify({ status: 'cancelled' }) });
+      showToast('Reservation cancelled.', 'warning');
+      loadDeals();
+      loadReservedOrders();
+    } catch (e) {
+      showToast(e.message, 'error');
+    }
+  }
+
+  document.getElementById('apply-filters').addEventListener('click', loadDeals);
+  document.getElementById('search-input').addEventListener('keydown', e => { if (e.key === 'Enter') loadDeals(); });
+
+  loadDeals();
+  loadReservedOrders();
+</script>
+</body>
+</html>

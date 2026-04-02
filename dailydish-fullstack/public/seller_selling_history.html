@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Dish | Incoming Orders</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:'Quicksand',sans-serif;background-color:#F8F7F2}
+    .font-serif{font-family:'Playfair Display',serif}
+    @keyframes slideIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+    @keyframes slideOut{from{transform:translateX(0);opacity:1}to{transform:translateX(120%);opacity:0}}
+    .alert-card{animation:slideIn 0.4s ease forwards}
+    .alert-card.hiding{animation:slideOut 0.4s ease forwards}
+    #alert-stack{position:fixed;top:80px;right:20px;z-index:100;display:flex;flex-direction:column;gap:10px;max-width:360px}
+    .pulse-dot{width:10px;height:10px;border-radius:50%;background:#10b981;animation:pulse 1.5s infinite}
+    @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.7}}
+  </style>
+</head>
+<body class="text-stone-800 flex flex-col min-h-screen">
+
+<!-- Live alert stack (top-right) -->
+<div id="alert-stack"></div>
+
+<header class="bg-white/90 backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-emerald-100">
+  <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="/" class="text-2xl font-bold text-emerald-600 flex items-center gap-3">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-emerald-500" viewBox="0 0 24 24" fill="currentColor"><path d="M22,9.333V8H2V9.333a9.998,9.998,0,0,0,2.158,6.334L4,22H20l-.158-6.333A9.998,9.998,0,0,0,22,9.333ZM12,2a8,8,0,0,0-8,8v.667h16V10A8,8,0,0,0,12,2Z"/></svg>
+      <span class="font-serif">Daily Dish</span>
+    </a>
+    <nav class="hidden md:flex items-center gap-8">
+      <a href="/seller_dashboard.html" class="text-stone-600 hover:text-emerald-600">Dashboard</a>
+      <a href="/seller_selling_history.html" class="text-emerald-600 font-semibold">Orders</a>
+      <a href="/seller_reviews.html" class="text-stone-600 hover:text-emerald-600">Reviews</a>
+    </nav>
+    <div class="flex items-center gap-3">
+      <!-- Live connection indicator -->
+      <div class="flex items-center gap-2 text-xs text-stone-500" id="ws-status">
+        <div class="pulse-dot" id="ws-dot" style="background:#d1d5db"></div>
+        <span id="ws-label">Connecting…</span>
+      </div>
+      <a href="/profile.html" class="hidden md:inline text-sm text-stone-500 hover:text-emerald-600 font-semibold">👤 <span data-user-name></span></a>
+      <button data-logout-btn class="px-4 py-2 text-sm text-white bg-red-500 rounded-full hover:bg-red-600 transition">Logout</button>
+    </div>
+  </div>
+</header>
+
+<main class="flex-grow py-10">
+  <div class="container mx-auto px-6">
+
+    <div class="flex items-center justify-between mb-8">
+      <h1 class="text-4xl font-serif font-bold">Incoming Orders</h1>
+      <div class="flex items-center gap-3">
+        <span class="text-sm text-stone-500">New reservations appear instantly ⚡</span>
+        <button onclick="loadOrders()" class="px-4 py-2 text-sm border border-stone-300 rounded-lg hover:bg-stone-50">Refresh</button>
+      </div>
+    </div>
+
+    <!-- ── OTP Verification Panel ───────────────────────────────────── -->
+    <div class="bg-gradient-to-r from-emerald-500 to-teal-600 p-8 rounded-2xl shadow-xl mb-10 text-white">
+      <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
+        <div class="flex-1">
+          <h2 class="text-2xl font-serif font-bold mb-1">🔐 Quick OTP Verification</h2>
+          <p class="text-emerald-100 text-sm">Buyer arrived? Enter their 6-character OTP here for quick verification, or click "Complete Order" on any reserved order for detailed verification. <strong>No valid OTP = purchase stays incomplete.</strong></p>
+        </div>
+        <div class="flex gap-3 w-full md:w-auto">
+          <input id="pickup-code-input"
+                 type="text"
+                 maxlength="6"
+                 placeholder="e.g. A3K9XZ"
+                 class="flex-1 md:w-40 px-4 py-3 rounded-xl text-stone-900 font-mono font-bold text-lg uppercase tracking-widest text-center focus:outline-none focus:ring-4 focus:ring-white/40 shadow-inner"
+                 oninput="this.value=this.value.toUpperCase()">
+          <button id="verify-btn"
+                  onclick="verifyPickup()"
+                  class="px-6 py-3 bg-white text-emerald-700 font-bold rounded-xl hover:bg-emerald-50 transition shadow-lg whitespace-nowrap">
+            Verify OTP
+          </button>
+        </div>
+      </div>
+      <!-- Result banner -->
+      <div id="verify-result" class="hidden mt-4 p-3 rounded-lg font-semibold text-sm"></div>
+    </div>
+
+    <!-- ── Stock Summary per deal ────────────────────────────────────────── -->
+    <div id="stock-summary" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10"></div>
+
+    <!-- ── Orders table ──────────────────────────────────────────────────── -->
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden border-t-4 border-emerald-400">
+      <div class="px-6 py-4 border-b border-stone-100 flex items-center justify-between">
+        <h2 class="text-xl font-serif font-bold">All Orders</h2>
+        <div class="flex gap-2">
+          <button onclick="filterOrders('all')"     id="f-all"      class="filter-btn px-3 py-1 text-xs rounded-full bg-stone-800 text-white">All</button>
+          <button onclick="filterOrders('reserved')"id="f-reserved" class="filter-btn px-3 py-1 text-xs rounded-full border border-stone-300 text-stone-600">Reserved</button>
+          <button onclick="filterOrders('sold')"     id="f-picked"  class="filter-btn px-3 py-1 text-xs rounded-full border border-stone-300 text-stone-600">Sold</button>
+          <button onclick="filterOrders('cancelled')"id="f-cancelled"class="filter-btn px-3 py-1 text-xs rounded-full border border-stone-300 text-stone-600">Cancelled</button>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-stone-50 text-left text-xs font-bold text-stone-500 uppercase tracking-wide">
+            <tr>
+              <th class="px-6 py-4">Product</th>
+              <th class="px-6 py-4">Buyer</th>
+              <th class="px-6 py-4">Qty</th>
+              <th class="px-6 py-4">Total</th>
+              <th class="px-6 py-4">OTP</th>
+              <th class="px-6 py-4">Status</th>
+              <th class="px-6 py-4">Date</th>
+              <th class="px-6 py-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="orders-table" class="divide-y divide-stone-100">
+            <tr><td colspan="8" class="px-6 py-8 text-center text-stone-400">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</main>
+<footer class="text-center py-4 text-stone-500 text-sm bg-white border-t border-stone-200">© 2025 Daily Dish.</footer>
+
+<!-- Pickup code spotlight modal -->
+<div id="code-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+  <div class="bg-white p-10 rounded-2xl shadow-2xl text-center max-w-xs w-full mx-4">
+    <p class="text-stone-500 text-sm mb-2">Buyer's OTP</p>
+    <div id="modal-code" class="text-5xl font-mono font-bold text-emerald-600 tracking-[0.3em] mb-4"></div>
+    <p id="modal-name" class="text-stone-600 font-semibold mb-1"></p>
+    <p id="modal-deal" class="text-stone-400 text-sm mb-6"></p>
+    <button onclick="document.getElementById('code-modal').classList.add('hidden')"
+            class="w-full py-3 bg-stone-800 text-white rounded-xl font-bold hover:bg-stone-700">Close</button>
+  </div>
+</div>
+
+<!-- Sold confirmation modal -->
+<div id="sold-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+  <div class="bg-white p-8 rounded-2xl shadow-2xl text-center max-w-sm w-full mx-4">
+    <h3 class="text-2xl font-serif font-bold mb-4">Verify & Complete Purchase</h3>
+    <p class="text-stone-600 mb-6">Enter the buyer's OTP to verify and mark as complete:</p>
+    <input id="sold-code-input" type="text" maxlength="6" placeholder="Enter OTP"
+           class="w-full p-4 border border-stone-300 rounded-xl text-center font-mono text-2xl font-bold uppercase tracking-widest mb-6 focus:ring-emerald-500 focus:border-emerald-500"
+           oninput="this.value=this.value.toUpperCase()">
+    <div class="flex gap-3">
+      <button onclick="document.getElementById('sold-modal').classList.add('hidden'); document.getElementById('sold-code-input').value='';"
+              class="flex-1 py-3 border-2 border-stone-300 rounded-xl font-bold hover:bg-stone-50">Cancel</button>
+      <button onclick="confirmSold()" class="flex-1 py-3 bg-emerald-500 text-white rounded-xl font-bold hover:bg-emerald-600">Verify OTP</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script src="/api.js"></script>
+<script>
+if (!requireAuth('seller')) {}
+
+const statusColors = {
+  reserved: 'bg-blue-100 text-blue-700',
+  sold:     'bg-emerald-100 text-emerald-700',
+  cancelled: 'bg-red-100 text-red-600'
+};
+let allOrders = [];
+let currentFilter = 'all';
+
+// ── Socket.IO connection ───────────────────────────────────────────────────────
+const socket = io();
+const wsDot   = document.getElementById('ws-dot');
+const wsLabel = document.getElementById('ws-label');
+
+socket.on('connect', () => {
+  const token = getToken();
+  if (token) socket.emit('authenticate', token);
+});
+
+socket.on('authenticated', () => {
+  wsDot.style.background   = '#10b981';
+  wsLabel.textContent      = 'Live';
+});
+
+socket.on('connect_error', () => {
+  wsDot.style.background = '#ef4444';
+  wsLabel.textContent    = 'Disconnected';
+});
+
+socket.on('disconnect', () => {
+  wsDot.style.background = '#f59e0b';
+  wsLabel.textContent    = 'Reconnecting…';
+});
+
+// ── New reservation alert from buyer ──────────────────────────────────────────
+socket.on('new_reservation', (data) => {
+  // Push in-page alert card
+  pushAlert(data);
+  // Reload orders list and stock summary
+  loadOrders();
+});
+
+// ── Reservation cancelled alert ───────────────────────────────────────────────
+socket.on('reservation_cancelled', (data) => {
+  pushCancelAlert(data);
+  loadOrders();
+});
+
+// ── Alert card builders ───────────────────────────────────────────────────────
+function pushAlert(data) {
+  const stack = document.getElementById('alert-stack');
+  const card  = document.createElement('div');
+  card.className = 'alert-card bg-white border-l-4 border-emerald-500 rounded-xl shadow-2xl p-4';
+  card.innerHTML = `
+    <div class="flex items-start justify-between gap-3">
+      <div>
+        <p class="font-bold text-stone-800 text-sm">🛒 New Reservation!</p>
+        <p class="text-emerald-700 font-semibold">${data.dealName}</p>
+        <p class="text-stone-500 text-xs mt-1">by <strong>${data.buyerName}</strong> — qty ${data.quantity}</p>
+        <p class="text-stone-500 text-xs">${data.remaining} remaining in stock</p>
+        <p class="text-xs mt-2 font-mono bg-stone-100 rounded px-2 py-1 inline-block text-emerald-700">Code: <strong>${data.pickupCode}</strong></p>
+      </div>
+      <button onclick="this.closest('.alert-card').remove()" class="text-stone-400 hover:text-stone-600 text-lg leading-none mt-1">×</button>
+    </div>`;
+  stack.prepend(card);
+  // Auto-dismiss after 12 seconds
+  setTimeout(() => {
+    card.classList.add('hiding');
+    setTimeout(() => card.remove(), 400);
+  }, 12000);
+  // Play a subtle sound cue if browser allows
+  try { new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAA...').play().catch(()=>{}); } catch(e) {}
+}
+
+function pushCancelAlert(data) {
+  const stack = document.getElementById('alert-stack');
+  const card  = document.createElement('div');
+  card.className = 'alert-card bg-white border-l-4 border-red-400 rounded-xl shadow-2xl p-4';
+  card.innerHTML = `
+    <div class="flex items-start justify-between gap-3">
+      <div>
+        <p class="font-bold text-stone-800 text-sm">❌ Reservation Cancelled</p>
+        <p class="text-red-600 font-semibold">${data.dealName}</p>
+        <p class="text-stone-500 text-xs mt-1">Qty ${data.quantity} returned to stock</p>
+      </div>
+      <button onclick="this.closest('.alert-card').remove()" class="text-stone-400 hover:text-stone-600 text-lg leading-none mt-1">×</button>
+    </div>`;
+  stack.prepend(card);
+  setTimeout(() => { card.classList.add('hiding'); setTimeout(() => card.remove(), 400); }, 8000);
+}
+
+// ── Verify pickup code ─────────────────────────────────────────────────────────
+async function verifyPickup() {
+  const input  = document.getElementById('pickup-code-input');
+  const btn    = document.getElementById('verify-btn');
+  const result = document.getElementById('verify-result');
+  const code   = input.value.trim().toUpperCase();
+
+  if (code.length < 4) {
+    result.textContent  = '⚠️ Please enter the full 6-character OTP.';
+    result.className    = 'mt-4 p-3 rounded-lg font-semibold text-sm bg-yellow-400/30 text-yellow-100';
+    result.classList.remove('hidden');
+    return;
+  }
+
+  btn.disabled     = true;
+  btn.textContent  = 'Verifying…';
+  result.classList.add('hidden');
+
+  try {
+    const data = await apiFetch('/orders/verify-pickup', {
+      method: 'POST',
+      body: JSON.stringify({ pickupCode: code })
+    });
+
+    result.innerHTML  = `✅ <strong>${data.message}</strong> — OTP verified, order #${data.order.pickupCode} completed.`;
+    result.className  = 'mt-4 p-3 rounded-lg font-semibold text-sm bg-white/20 text-white';
+    result.classList.remove('hidden');
+    input.value       = '';
+    loadOrders();
+
+    // Confetti-style flash on the row
+    setTimeout(() => result.classList.add('hidden'), 5000);
+  } catch (err) {
+    result.innerHTML  = `❌ <strong>${err.message}</strong>`;
+    result.className  = 'mt-4 p-3 rounded-lg font-semibold text-sm bg-red-500/30 text-red-100';
+    result.classList.remove('hidden');
+    input.select();
+  } finally {
+    btn.disabled    = false;
+    btn.textContent = 'Verify OTP';
+  }
+}
+
+// Enter key on code input
+document.getElementById('pickup-code-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') verifyPickup();
+});
+
+// ── Load all orders ────────────────────────────────────────────────────────────
+async function loadOrders() {
+  try {
+    const data = await apiFetch('/orders/seller');
+    allOrders  = data.orders || [];
+    renderOrders(currentFilter);
+    renderStockSummary(allOrders);
+  } catch (e) {
+    document.getElementById('orders-table').innerHTML =
+      `<tr><td colspan="7" class="px-6 py-8 text-center text-red-400">Failed to load orders.</td></tr>`;
+  }
+}
+
+function filterOrders(status) {
+  currentFilter = status;
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.className = 'filter-btn px-3 py-1 text-xs rounded-full border border-stone-300 text-stone-600';
+  });
+  const active = document.getElementById(`f-${status === 'sold' ? 'picked' : status}`);
+  if (active) active.className = 'filter-btn px-3 py-1 text-xs rounded-full bg-stone-800 text-white';
+  renderOrders(status);
+}
+
+function renderOrders(filter) {
+  const tbody  = document.getElementById('orders-table');
+  const orders = filter === 'all' ? allOrders : allOrders.filter(o => o.status === filter);
+
+  if (!orders.length) {
+    tbody.innerHTML = `<tr><td colspan="8" class="px-6 py-10 text-center text-stone-400">
+      ${filter === 'all' ? 'No orders yet.' : `No ${filter.replace('_',' ')} orders.`}
+    </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = orders.map(o => {
+    const isReserved = o.status === 'reserved';
+    return `
+      <tr class="hover:bg-stone-50 transition ${isReserved ? 'bg-blue-50/40' : ''}">
+        <td class="px-6 py-4">
+          <p class="font-semibold">${o.dealSnapshot.name}</p>
+          <p class="text-xs text-stone-400">${o.dealSnapshot.category}</p>
+        </td>
+        <td class="px-6 py-4">
+          <p class="font-medium text-stone-700">${o.buyer?.name || '—'}</p>
+          <p class="text-xs text-stone-400">${o.buyer?.email || ''}</p>
+        </td>
+        <td class="px-6 py-4 font-bold">${o.quantity}</td>
+        <td class="px-6 py-4 text-emerald-600 font-bold">₹${o.totalPaid}</td>
+        <td class="px-6 py-4">
+          ${isReserved
+            ? (o.buyerConfirmed
+                ? `<button
+                    onclick="showCodeModal('${o.pickupCode}','${(o.buyer?.name||'').replace(/'/g,"\\'")}','${o.dealSnapshot.name.replace(/'/g,"\\'")}','${o._id}')"
+                    class="font-mono text-lg font-bold text-emerald-700 bg-emerald-50 border-2 border-emerald-200 px-3 py-1 rounded-lg hover:bg-emerald-100 tracking-widest transition">
+                    ${o.pickupCode}
+                  </button>`
+                : `<span class="text-amber-600 font-semibold text-sm">Buyer confirming OTP…</span>`
+              )
+            : `<span class="font-mono text-sm text-stone-400">${o.pickupCode}</span>`
+          }
+        </td>
+        <td class="px-6 py-4">
+          <span class="px-2 py-1 rounded-full text-xs font-bold ${statusColors[o.status]}">
+            ${o.status.replace('_',' ')}
+          </span>
+        </td>
+        <td class="px-6 py-4 text-xs text-stone-400">${new Date(o.createdAt).toLocaleString()}</td>
+        <td class="px-6 py-4">
+          ${isReserved && o.buyerConfirmed ? `
+            <a href="/complete_order.html?orderId=${o._id}" class="inline-block px-4 py-2 bg-emerald-500 text-white text-xs font-bold rounded-lg hover:bg-emerald-600 transition shadow-md mr-2">Complete Order</a>
+          ` : ''}
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+// ── Show code in modal (for accessibility — easier to read) ───────────────────
+function showCodeModal(code, buyerName, dealName) {
+  document.getElementById('modal-code').textContent = code;
+  document.getElementById('modal-name').textContent = buyerName;
+  document.getElementById('modal-deal').textContent = dealName;
+  document.getElementById('code-modal').classList.remove('hidden');
+  // Pre-fill verify input too
+  document.getElementById('pickup-code-input').value = code;
+}
+
+// ── Stock summary cards ────────────────────────────────────────────────────────
+function renderStockSummary(orders) {
+  const reserved = orders.filter(o => o.status === 'reserved');
+  // Group by deal name
+  const dealMap  = {};
+  reserved.forEach(o => {
+    const k = o.dealSnapshot.name;
+    if (!dealMap[k]) dealMap[k] = { qty: 0, revenue: 0 };
+    dealMap[k].qty     += o.quantity;
+    dealMap[k].revenue += o.totalPaid;
+  });
+  const container = document.getElementById('stock-summary');
+  const entries   = Object.entries(dealMap);
+  if (!entries.length) {
+    container.innerHTML = '<p class="col-span-4 text-stone-400 text-sm">No active reservations right now.</p>';
+    return;
+  }
+  container.innerHTML = entries.map(([name, d]) => `
+    <div class="bg-white p-5 rounded-xl shadow border-l-4 border-blue-400">
+      <p class="font-bold text-stone-800 text-sm truncate">${name}</p>
+      <p class="text-3xl font-bold text-blue-600 mt-2">${d.qty} <span class="text-base font-normal text-stone-400">reserved</span></p>
+      <p class="text-xs text-emerald-600 font-semibold mt-1">₹${d.revenue} incoming</p>
+    </div>`).join('');
+}
+
+// ── Mark order as sold ────────────────────────────────────────────────────────
+let currentOrderId = null;
+
+function markAsSold(orderId) {
+  currentOrderId = orderId;
+  document.getElementById('sold-modal').classList.remove('hidden');
+  document.getElementById('sold-code-input').focus();
+}
+
+async function confirmSold() {
+  const code = document.getElementById('sold-code-input').value.trim().toUpperCase();
+  if (!code) {
+    showToast('Please enter the buyer\'s OTP.', 'error');
+    return;
+  }
+
+  try {
+    const response = await apiFetch('/orders/verify-pickup', {
+      method: 'POST',
+      body: JSON.stringify({ pickupCode: code })
+    });
+
+    document.getElementById('sold-modal').classList.add('hidden');
+    document.getElementById('sold-code-input').value = '';
+    showToast(response.message, 'success');
+    loadOrders();
+    currentOrderId = null;
+  } catch (e) {
+    showToast(e.message, 'error');
+  }
+}
+
+async function deleteOrder(orderId) {
+  if (!confirm('Delete this order? This cannot be undone.')) return;
+
+  try {
+    // For now, we'll just show a message since we don't have a delete endpoint
+    showToast('Order deletion not implemented yet.', 'warning');
+  } catch (e) {
+    showToast(e.message, 'error');
+  }
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+loadOrders();
+</script>
+</body>
+</html>

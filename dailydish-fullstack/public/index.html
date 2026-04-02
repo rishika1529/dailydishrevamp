@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Dish | Fresh Deals, Zero Waste</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Quicksand', sans-serif; background-color: #F8F7F2; }
+    .font-serif { font-family: 'Playfair Display', serif; }
+    .feature-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .feature-card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+  </style>
+</head>
+<body class="text-stone-800 flex flex-col min-h-screen">
+
+  <header class="bg-white/95 backdrop-blur-sm shadow sticky top-0 z-50 border-b border-emerald-100">
+    <div class="container mx-auto px-6 py-4 flex items-center justify-between gap-6">
+      <a href="/" class="flex items-center gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 text-emerald-500" viewBox="0 0 24 24" fill="currentColor"><path d="M22,9.333V8H2V9.333a9.998,9.998,0,0,0,2.158,6.334L4,22H20l-.158-6.333A9.998,9.998,0,0,0,22,9.333ZM12,2a8,8,0,0,0-8,8v.667h16V10A8,8,0,0,0,12,2Z"/></svg>
+        <span class="text-2xl font-serif font-bold text-emerald-600">Daily Dish</span>
+      </a>
+      <nav class="flex items-center gap-3" id="nav-area">
+        <a href="/login.html" class="px-4 py-2 text-emerald-600 font-semibold rounded-full hover:bg-emerald-50">Login</a>
+        <a href="/signup.html" class="px-4 py-2 bg-emerald-500 text-white font-semibold rounded-full shadow hover:bg-emerald-600">Sign Up</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="w-full mt-6">
+    <div class="container mx-auto px-6">
+      <img src="/assets/Best deals curated for you.png" alt="Best deals curated for you" class="w-full h-48 md:h-72 object-cover rounded-2xl shadow-xl" loading="lazy">
+    </div>
+  </div>
+
+  <main class="flex-grow">
+    <section class="relative py-16 px-6 text-center md:py-24">
+      <div class="container mx-auto max-w-4xl">
+        <h1 class="text-4xl md:text-5xl font-serif font-bold text-stone-800 mb-4">Fresh Deals. Zero Waste.</h1>
+        <p class="text-lg text-stone-600 mb-8">Discover local shops offering surplus fresh food at unbeatable prices — help reduce waste while you save.</p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="/signup.html" class="px-8 py-3 bg-emerald-500 text-white font-bold rounded-lg shadow hover:bg-emerald-600">Get Started</a>
+          <a href="/shops_map.html" class="px-8 py-3 border-2 border-emerald-500 text-emerald-600 font-bold rounded-lg hover:bg-emerald-50">Find Nearby Deals</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Live Deals from API -->
+    <section class="py-12 px-6 bg-white border-t border-stone-200">
+      <div class="container mx-auto max-w-6xl">
+        <div class="flex items-center justify-between mb-8">
+          <h2 class="text-3xl font-serif font-bold">Top Deals Near You</h2>
+          <a href="/signup.html" class="text-emerald-600 font-semibold hover:underline">See all →</a>
+        </div>
+        <div id="live-deals" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <p class="text-stone-400 col-span-3 text-center py-10">Loading deals…</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16 px-6">
+      <div class="container mx-auto max-w-5xl">
+        <h2 class="text-3xl font-serif font-bold text-center mb-6">Why Choose Daily Dish?</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="feature-card bg-emerald-50 p-6 rounded-xl"><h3 class="font-bold mb-2">💰 Save Money</h3><p class="text-sm text-stone-700">High quality surplus at deep discounts up to 70% off.</p></div>
+          <div class="feature-card bg-teal-50 p-6 rounded-xl"><h3 class="font-bold mb-2">🌱 Reduce Waste</h3><p class="text-sm text-stone-700">Keep food out of landfills and support local businesses.</p></div>
+          <div class="feature-card bg-amber-50 p-6 rounded-xl"><h3 class="font-bold mb-2">⚡ Extra Revenue</h3><p class="text-sm text-stone-700">Help shops monetize surplus stock before it expires.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16 px-6 bg-white">
+      <div class="container mx-auto">
+        <img src="/assets/Find great deals and types!(1).png" alt="Find great deals" class="mx-auto w-full max-w-4xl object-cover rounded-2xl" loading="lazy">
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-stone-900 text-stone-200 py-10">
+    <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div>
+        <p class="font-serif text-2xl text-emerald-400 font-bold">Daily Dish</p>
+        <p class="text-sm text-stone-400 mt-2">Connecting communities and reducing food waste.</p>
+      </div>
+      <div class="text-sm text-stone-400">
+        <p class="font-bold text-stone-200 mb-2">Explore</p>
+        <ul class="space-y-2">
+          <li><a href="/shops_map.html" class="hover:text-emerald-300">Find shops</a></li>
+          <li><a href="/signup.html" class="hover:text-emerald-300">Sign up</a></li>
+          <li><a href="/login.html" class="hover:text-emerald-300">Log in</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="font-bold text-stone-200 mb-2">Join our newsletter</p>
+        <form onsubmit="event.preventDefault(); showToast('Thanks for subscribing! 🎉');" class="flex gap-2">
+          <input type="email" required placeholder="you@example.com" class="flex-1 px-3 py-2 rounded-md text-sm text-stone-800" />
+          <button class="bg-emerald-500 px-3 py-2 rounded-md text-white text-sm">Subscribe</button>
+        </form>
+      </div>
+    </div>
+    <div class="container mx-auto px-6 mt-8 border-t border-stone-800 pt-6 text-sm text-stone-500 text-center">
+      <p>© 2025 Daily Dish. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="/api.js"></script>
+  <script>
+    // Redirect if already logged in
+    document.addEventListener('DOMContentLoaded', () => {
+      if (isLoggedIn()) {
+        const navArea = document.getElementById('nav-area');
+        const user = getUser();
+        const dashLink = isRole('seller') ? '/seller_dashboard.html' : '/buyer_dashboard.html';
+        navArea.innerHTML = `
+          <span class="text-sm text-stone-600">Hi, <strong>${user.name}</strong></span>
+          <a href="${dashLink}" class="px-4 py-2 bg-emerald-500 text-white font-semibold rounded-full shadow hover:bg-emerald-600">Dashboard</a>
+          <button onclick="logout()" class="px-4 py-2 text-red-500 font-semibold rounded-full hover:bg-red-50">Logout</button>
+        `;
+      }
+
+      // Load live deals
+      apiFetch('/deals?limit=3').then(data => {
+        const container = document.getElementById('live-deals');
+        if (!data.deals || data.deals.length === 0) {
+          container.innerHTML = '<p class="text-stone-400 col-span-3 text-center py-10">No deals yet — be the first to post one!</p>';
+          return;
+        }
+        const colors = ['emerald', 'amber', 'rose'];
+        container.innerHTML = data.deals.slice(0, 3).map((d, i) => {
+          const c = colors[i % 3];
+          const pct = Math.round(((d.originalPrice - d.discountedPrice) / d.originalPrice) * 100);
+          const imgHtml = d.image
+            ? `<img src="${d.image}" class="w-full h-32 object-cover rounded-lg mb-4" />`
+            : `<div class="h-20 w-20 bg-${c}-500 rounded-full flex items-center justify-center mb-4 mx-auto"><span class="text-3xl">🍱</span></div>`;
+          return `
+            <article class="feature-card bg-gradient-to-br from-${c}-50 to-${c}-100 p-6 rounded-xl border-2 border-${c}-200 shadow-md">
+              ${imgHtml}
+              <h3 class="font-bold text-lg text-center">${d.name} — ${pct}% off</h3>
+              <p class="text-sm text-stone-700 text-center my-3">${d.shopName} • Expires ${new Date(d.pickupBy).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</p>
+              <div class="flex items-center justify-between">
+                <span class="text-${c}-600 font-bold text-xl">₹${d.discountedPrice}</span>
+                <a href="/signup.html" class="px-4 py-2 bg-${c}-600 text-white text-sm font-semibold rounded-lg hover:bg-${c}-700">Grab Deal</a>
+              </div>
+            </article>`;
+        }).join('');
+      }).catch(() => {
+        document.getElementById('live-deals').innerHTML = '<p class="text-stone-400 col-span-3 text-center py-10">Could not load deals right now.</p>';
+      });
+    });
+  </script>
+</body>
+</html>
